@@ -1,0 +1,28 @@
+{
+  "bindings": [
+    {
+      "type": "eventHubTrigger",
+      "name": "eventHubMessages",
+      "direction": "in",
+      "path": "iothub-ehub-iamhub1-168585-91a4659b5c",
+      "connection": "IAMhub1_events_IOTHUB",
+      "cardinality": "one",
+      "consumerGroup": "$Default"
+    },
+    {
+      "type": "table",
+      "name": "inputTable",
+      "tableName": "devicetable4",
+      "connection": "iamstorage1_STORAGE",
+      "direction": "in"
+    },
+    {
+      "type": "table",
+      "name": "outputTable",
+      "tableName": "devicetable4",
+      "connection": "iamstorage1_STORAGE",
+      "direction": "out"
+    }
+  ],
+  "disabled": false
+}
