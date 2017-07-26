@@ -1,20 +1,16 @@
 {
   "IsEncrypted": false,
-  "Value": {
-    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
-    "WEBSITE_SLOT_NAME": "Production",
+  "Values": {
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",    
+"AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
     "FUNCTIONS_EXTENSION_VERSION": "~1",
-    "ScmType": "GitHub",
-    "iamstorage1_STORAGE": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
-    "WEBSITE_AUTH_ENABLED": "False",
-    "REMOTEDEBUGGINGVERSION": "14.0.25431.01",
-    "FUNCTION_APP_EDIT_MODE": "readwrite",
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "2c5b7bca-12cc-4d9e-a84b-b44f163eb87e",
-    "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
     "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
     "WEBSITE_CONTENTSHARE": "iamfnapp80ff",
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
-    "WEBSITE_SITE_NAME": "iamfnapp",
-    "IAMhub1_events_IOTHUB": "Endpoint=sb://ihsuprodbyres023dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=LwLw0I2+HC8s2I7W6+r8b16HBLPAcsPRanyh0KMq6oQ=;EntityPath=iothub-ehub-iamhub1-168585-91a4659b5c"
-  }
+    "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "2c5b7bca-12cc-4d9e-a84b-b44f163eb87e",
+    "IAMhub1_events_IOTHUB": "Endpoint=sb://ihsuprodbyres023dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=LwLw0I2+HC8s2I7W6+r8b16HBLPAcsPRanyh0KMq6oQ=;EntityPath=iothub-ehub-iamhub1-168585-91a4659b5c",
+    "iamstorage1_STORAGE": "DefaultEndpointsProtocol=https;AccountName=iamstorage1;AccountKey=5JW2kV/ZPx5DvvTLpE8NTAUxbOEfWYrSMogXsgs/LquqtrnhiquY++tr41KqPfF5oCTezp7ckT9m7w7KVWAHbg==",
+    "FUNCTION_APP_EDIT_MODE": "readwrite"
+  },
+  "ConnectionStrings": {}
 }
