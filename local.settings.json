@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
+    "FUNCTIONS_EXTENSION_VERSION": "~1",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
+    "WEBSITE_CONTENTSHARE": "spectralqualb940",
+    "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "acc2f5f7-fd44-4a42-8aec-ecc7d9e2e47f",
+    "AzureWebJobsSecretStorageType": "disabled",
+    "Spectraqual-free_events_IOTHUB": "Endpoint=sb://ihsuprodamres046dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=FqbSUEbQjniS1KA97c4CNuzLGU/uLccMa5AB1zi6GdU=;EntityPath=iothub-ehub-spectraqua-167919-9ac1d70d5a",
+    "spectralqualstorage_STORAGE": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
+    "FUNCTION_APP_EDIT_MODE": "readwrite"
+  },
+  "ConnectionStrings": {}
+}
