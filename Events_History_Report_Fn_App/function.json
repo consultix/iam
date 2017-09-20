@@ -3,18 +3,18 @@
   "bindings": [
     {
       "type": "table",
-      "name": "inputTable",
-      "tableName": "failureTable",
+      "name": "HistoryinputTable",
+      "tableName": "EventsHistoryTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "in"
     },
     {
       "type": "table",
-      "name": "outputTable",
-      "tableName": "failureTable",
+      "name": "HistoryoutputTable",
+      "tableName": "EventsHistoryTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "out"
-    },
+    },    
     {
       "type": "eventHubTrigger",
       "name": "eventHubMessages",

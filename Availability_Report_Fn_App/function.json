@@ -1,0 +1,18 @@
+{
+  "disabled": true,
+  "bindings": [
+    {
+      "type": "table",
+      "name": "inputTable",
+      "tableName": "FailureTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "in"
+    },
+    {
+      "name": "myTimer",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */5 * * * *"//"0 */5 * * * *"
+    }
+  ]
+}

@@ -1,17 +1,24 @@
 {
-  "disabled": true,
+  "disabled": false,
   "bindings": [
     {
       "type": "table",
-      "name": "inputTable",
-      "tableName": "BatteryTable",
+      "name": "FailureinputTable",
+      "tableName": "FailureTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "in"
     },
     {
       "type": "table",
-      "name": "outputTable",
-      "tableName": "BatteryTable",
+      "name": "HistoryinputTable",
+      "tableName": "EventsHistoryTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "in"
+    },
+    {
+      "type": "table",
+      "name": "FailureoutputTable",
+      "tableName": "FailureTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "out"
     },
