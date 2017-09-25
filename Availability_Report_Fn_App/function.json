@@ -1,10 +1,10 @@
 {
-  "disabled": true,
+  "disabled": false,
   "bindings": [
     {
       "type": "table",
-      "name": "inputTable",
-      "tableName": "FailureTable",
+      "name": "HistoryinputTable",
+      "tableName": "EventsHistoryTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "in"
     },
@@ -12,7 +12,7 @@
       "name": "myTimer",
       "type": "timerTrigger",
       "direction": "in",
-      "schedule": "0 */5 * * * *"//"0 */5 * * * *"
+      "schedule": "*/5 * * * * *"//"0 */5 * * * *"
     }
   ]
 }
