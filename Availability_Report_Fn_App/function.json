@@ -9,6 +9,20 @@
       "direction": "in"
     },
     {
+      "type": "table",
+      "name": "AvailabilityTablein",
+      "tableName": "AvailabilityTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "in"
+    },
+    {
+      "type": "table",
+      "name": "AvailabilityTableout",
+      "tableName": "AvailabilityTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "out"
+    },    
+    {
       "name": "myTimer",
       "type": "timerTrigger",
       "direction": "in",

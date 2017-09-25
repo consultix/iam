@@ -2,10 +2,9 @@ module.exports = function (context, myTimer) {
     // var timeStamp = new Date().toISOString();
     
     var azure               = require('azure-storage');
-    //var queryString         = require('query-string');
 
     var timeStamp           = Date.now();
-    var avail_period_in_hr  = 24 * 3;
+    var avail_period_in_hr  = 24 * 7;
     var avail_period_in_ms  = avail_period_in_hr * 60 * 60 * 1000.0;
     var start_time_to_check = timeStamp - avail_period_in_ms ;//in ms
   
@@ -26,13 +25,8 @@ module.exports = function (context, myTimer) {
         var tableentr = {
             PartitionKey  : entGen.String(partitionKey),
             RowKey        : entGen.String(rowKey),
-            devID         : entGen.String(msg.ID),
-            status        : msg.Pin1,
-            start         : msg.start,
-            period        : msg.timeperiod,
-            lastseen      : msg.lastseen,   
-            message       : JSON.stringify(msg)
-    
+            devID         : entGen.String(msg.devID),
+            availability  : msg.avail,
         };
 
         tableService.insertEntity(table, tableentr, function (error, result, response) {
@@ -79,14 +73,15 @@ module.exports = function (context, myTimer) {
             queryentr.reverse();
             
             //Fitler according to timw window/////////////////////////////////////////
-            var lastseen_filterd = queryentr;//queryentr.filter(lastseen_filter);for test
-            //lastseen_filterd.forEach(update_start);//for test
+            var lastseen_filterd = queryentr.filter(lastseen_filter);
+            lastseen_filterd.forEach(update_start);
             /////////////////////////////////////////////////////////////////////////
 
             //Grouping devIDs, then calc. sum of periods/////////////////////////////
             //Grouping
             var grouped_devIDs = lastseen_filterd.reduce(groupby_devID, {});
             //Calc sum of periods
+           
             var grouped_devIDs_period = [];
             Object.keys(grouped_devIDs).forEach(function (key){
                 grouped_devIDs_period[key] = grouped_devIDs[key].reduce(function(sum_period, item){
@@ -95,12 +90,12 @@ module.exports = function (context, myTimer) {
                 },0);
             });
             ////////////////////////////////////////////////////////////////////////
-
+            
             //Calc Availability/////////////////////////////////////////////////////
-            var avail = {};
+            var availability = [];
             Object.keys(grouped_devIDs_period).forEach(function(key){
                 var value = grouped_devIDs_period[key] * 100 / avail_period_in_ms;
-                avail[key] = value;
+                availability.push({devID:key, avail:value});
             }); 
             ////////////////////////////////////////////////////////////////////////
            
@@ -110,61 +105,44 @@ module.exports = function (context, myTimer) {
                 if (error) {
                     context.log("Error Creating ", Events_History_table );
                 }
-            });
+            });           
 
-            var findentr = 
-            {
-                 devid : {'_': 0}
-            };
-            var query = new azure.TableQuery()
-            //.top(30)
-            //.where('devID eq ?', `${msgparse.ID}`);
-            //.where('PartitionKey eq ?', '17359');
-    
-            function ishere(entr)
-            {
-                return JSON.stringify(entr.devID) == JSON.stringify(findentr.devid);
-            } 
-        
-            function devID_search(entrID)
-            {
-                return (entrID == findentr.devid._);
-            }
-
-            tableService.queryEntities(Availability_table, query, null, function(error, result, response) 
+            //Check Availability Table
+            tableService.queryEntities(Availability_table, null, null, function(error, result, response) 
             {
                if(!error) 
                {          
                     var queryentr = result.entries; 
                     queryentr.reverse(); 
-                    Object.keys(avail).forEach(function(key)
+                    availability.forEach(function(item)
                     {
-                        findentr.devid._  = key;
-                        var indx = queryentr.findIndex(ishere);
+                        var indx = queryentr.findIndex(function (entr)
+                        {
+                            return entr.devID._ == item.devID;
+                        });
+
                         if(indx < 0)
                         {
-                           // item.start      = date;
-                            //tablestrg_add_msg(item, Availability_table); 
-                            ;                               
+                            //Add new entry of devID not exist 
+                            tablestrg_add_msg(item, Availability_table); 
                         }
                         else
                         {
-                            //queryentr[indx].lastseen._  = date; 
-                            //tableService.replaceEntity(Events_History_table, queryentr[indx], function(error, result, response)
-                            // {
-                            //     if(!error) {
-                            //         context.log(' Entity updated ' );
-                            //     }
-                            // });
-                            ;
+                            //Update already existing entry
+                            queryentr[indx].availability._  = item.avail; 
+                            tableService.replaceEntity(Availability_table, queryentr[indx], function(error, result, response)
+                            {
+                                if(!error) {
+                                    context.log(' Entity updated ' );
+                                }
+                            });
                         }
                     });
                 }
             }); 
+            ///////////////////////////////////////////////////////////////////////////
         }
     }); 
-
-
 
     if(myTimer.isPastDue)
     {
