@@ -22,7 +22,26 @@ var client, config, messageProcessor;
 var telemetryPacket = [];
 var teststring = '\0';
 
-
+// function sendMessage(telemetryPacket) {
+//   //if (!sendingMessage) { return; }
+//   messageId++;
+//   messageProcessor.getMessage(messageId, (content, temperatureAlert) => {
+//     var message = new Message(content);
+//     //var message = new Message(telemetryPacket);
+//     message.properties.add('temperatureAlert', temperatureAlert ? 'true' : 'false');
+//     //console.log('Sending message: ' + telemetryPacket);
+//     console.log('Sending message: ' + content);
+    
+//     client.sendEvent(message, (err) => {
+//       if (err) {
+//         console.error('Failed to send message to Azure IoT Hub');
+//       } else {
+//         console.log('Message sent to Azure IoT Hub');
+//       }
+//       setTimeout(sendMessage, config.interval);
+//     });
+//   });
+// }
 
 // Packest from the Estimote family (Telemetry, Connectivity, etc.) are
 // broadcast as Service Data (per "§ 1.11. The Service Data - 16 bit UUID" from
@@ -68,7 +87,7 @@ function parseEstimoteTelemetryPacket(data)
     // 0 = state "low", 1 = state "high"
     //var gpio = {
      var pin0 = (data.readUInt8(15) & 0b00010000) >> 4 ? 'high' : 'low';
-     var pin1 = 'high';//(data.readUInt8(15) & 0b00100000) >> 5 ? 'high' : 'low';
+     var pin1 = (data.readUInt8(15) & 0b00100000) >> 5 ? 'high' : 'low';
       //pin2: (data.readUInt8(15) & 0b01000000) >> 6 ? 'high' : 'low',
       //pin3: (data.readUInt8(15) & 0b10000000) >> 7 ? 'high' : 'low',
     //};
@@ -102,36 +121,11 @@ function parseEstimoteTelemetryPacket(data)
 
     return tele_message;
    
-  } 
+
     // **************** 
     // * SUBFRAME "B" *
     // ****************
-  else if (subFrameType == ESTIMOTE_TELEMETRY_SUBFRAME_B) 
-  {
-    var batteryVoltage =
-        (data.readUInt8(18)               << 6) |
-        ((data.readUInt8(17) & 0b11111100) >> 2);
-    if (batteryVoltage == 0b11111111111111) { batteryVoltage = undefined; }
-
-    var batteryLevel;
-    if (protocolVersion >= 1) 
-    {
-      batteryLevel = data.readUInt8(19);
-      if (batteryLevel == 0b11111111) { batteryLevel = undefined; }
-    }
-        
-    var tele_message = JSON.stringify(
-      {
-        projectname:'Butterfly', 
-        ID:shortIdentifier, 
-        batt_volt:batteryVoltage, 
-        batt_level:batteryLevel
-      });
-
-    return tele_message;
-      
-  }
- 
+  } 
   else {
     return '\0';
 
@@ -268,21 +262,21 @@ function initClient(connectionStringParam, credentialPath) {
                   { 
                      console.log(telemetryPacket, telemetryPacket.length); 
 
-                     var message = new Message(telemetryPacket);
+                     //var message = new Message(telemetryPacket);
                      //console.log(message);
                      //console.log('Sending message: ' + telemetryPacket);
                       
-                     client.sendEvent(message, (err) => {
+                     //client.sendEvent(message, (err) => {
                       
-                         if (err) {
-                             console.error('Failed to send message to Azure IoT Hub' + err.message);
-                         } else {
-                             console.log('Message sent to Azure IoT Hub');
+                     //    if (err) {
+                     //        console.error('Failed to send message to Azure IoT Hub' + err.message);
+                     //    } else {
+                     //        console.log('Message sent to Azure IoT Hub');
                             
-                         } 
+                     //    } 
                     //     //setTimeout(peripheral, config.interval); 
                     
-                     });
+                     //});
                       telemetryPacket = [] ;
                   }
             }, config.interval);
