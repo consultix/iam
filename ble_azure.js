@@ -222,7 +222,7 @@ function initClient(connectionStringParam, credentialPath) {
         }
     });
 
-
+    var connectionString = "HostName=Spectraqual-free.azure-devices.net;DeviceId=spectralqual_gateway1;SharedAccessKey=d+CD4LnE1b8TELtwrYqBJ0b7UNWes2bv2Uajtoe7DY8=";
     // create a client
     // read out the connectionString from process environment
     connectionString = connectionString || process.env['AzureIoTHubDeviceConnectionString'];
