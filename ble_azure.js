@@ -19,7 +19,8 @@ const MessageProcessor = require('./messageProcessor.js');
 var sendingMessage = true;
 var messageId = 0;
 var client, config, messageProcessor;
-var telemetryPacket = [];
+var TelemetryPacket = [];
+var BatteryPacket = [];
 var teststring = '\0';
 
 
@@ -98,7 +99,7 @@ function parseEstimoteTelemetryPacket(data)
       // in protocol version "0", error codes are in subframe "B" instead
     }
  
-    var tele_message = JSON.stringify({projectname:'Butterfly', ID:shortIdentifier, Pin0:pin0, Pin1:pin1});
+    var tele_message = {projectname:'Butterfly', ID:shortIdentifier, Pin0:pin0, Pin1:pin1};
 
     return tele_message;
    
@@ -120,13 +121,13 @@ function parseEstimoteTelemetryPacket(data)
       if (batteryLevel == 0b11111111) { batteryLevel = undefined; }
     }
         
-    var tele_message = JSON.stringify(
+    var tele_message = 
       {
         projectname:'Butterfly', 
         ID:shortIdentifier, 
         batt_volt:batteryVoltage, 
         batt_level:batteryLevel
-      });
+      };
 
     return tele_message;
       
@@ -189,7 +190,6 @@ function initClient(connectionStringParam, credentialPath) {
   return client;
 }
 
-
 (function (connectionString) {
  
     // read in configuration in config.json
@@ -223,6 +223,7 @@ function initClient(connectionStringParam, credentialPath) {
     });
 
     var connectionString = "HostName=Spectraqual-free.azure-devices.net;DeviceId=spectralqual_gateway1;SharedAccessKey=d+CD4LnE1b8TELtwrYqBJ0b7UNWes2bv2Uajtoe7DY8=";
+    
     // create a client
     // read out the connectionString from process environment
     connectionString = connectionString || process.env['AzureIoTHubDeviceConnectionString'];
@@ -258,36 +259,64 @@ function initClient(connectionStringParam, credentialPath) {
             teststring = parseEstimoteTelemetryPacket(data);
             if( teststring != '\0' )
             {
-              telemetryPacket.push(teststring);  
+              if(teststring.batt_volt)
+                BatteryPacket.push(teststring); 
+              else  
+                TelemetryPacket.push(teststring);  
             }
         });
 
+         function Filter_Repetition(buff)
+         {
+            var grouped_IDs = [];
+            buff.forEach(function(item)
+            {
+              var id = item.ID;
+              grouped_IDs[id] = grouped_IDs[id] || [];
+              grouped_IDs[id] = item;
+            });
+
+            var single_pkt = [];
+            Object.keys(grouped_IDs).forEach(function(key)
+            {
+              single_pkt.push(JSON.stringify(grouped_IDs[key]));
+            });
+
+            return single_pkt;
+         }
+
          setInterval(() => {
 
-                  if (telemetryPacket.length != 0) 
-                  { 
-                     console.log(telemetryPacket, telemetryPacket.length); 
+            if(TelemetryPacket.length != 0) 
+              TelemetryPacket = Filter_Repetition(TelemetryPacket);
 
-                     var message = new Message(telemetryPacket);
-                     //console.log(message);
-                     //console.log('Sending message: ' + telemetryPacket);
-                      
-                     client.sendEvent(message, (err) => {
-                      
-                         if (err) {
-                             console.error('Failed to send message to Azure IoT Hub' + err.message);
-                         } else {
-                             console.log('Message sent to Azure IoT Hub');
-                            
-                         } 
-                    //     //setTimeout(peripheral, config.interval); 
-                    
-                     });
-                      telemetryPacket = [] ;
-                  }
-            }, config.interval);
-        
+            if(BatteryPacket.lenrth != 0)
+              BatteryPacket = Filter_Repetition(BatteryPacket);
+                
 
+            console.log("TELEMETRY",TelemetryPacket, TelemetryPacket.length);
+            console.log("BATTERY",BatteryPacket, BatteryPacket.length);
+            
+            function Azure_Send(buff)
+            {
+              var message = new Message(buff);
+              client.sendEvent(message, (err) => {
+              
+                  if (err) {
+                      console.error('Failed to send message to Azure IoT Hub' + err.message);
+                  } else {
+                      console.log('Message sent to Azure IoT Hub');
+                  } 
+              });
+            }
+
+            Azure_Send(TelemetryPacket);
+            Azure_Send(BatteryPacket);
+ 
+            TelemetryPacket = [] ;
+            BatteryPacket = [];
+            
+        }, config.interval);
     });
          
 

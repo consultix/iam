@@ -216,7 +216,7 @@ function initClient(connectionStringParam, credentialPath) {
         }
     });
 
-
+    var connectionString = "HostName=Spectraqual-free.azure-devices.net;DeviceId=spectralqual_gateway1;SharedAccessKey=d+CD4LnE1b8TELtwrYqBJ0b7UNWes2bv2Uajtoe7DY8=";
     // create a client
     // read out the connectionString from process environment
     connectionString = connectionString || process.env['AzureIoTHubDeviceConnectionString'];
@@ -252,7 +252,8 @@ function initClient(connectionStringParam, credentialPath) {
             teststring = parseEstimoteTelemetryPacket(data);
             if( teststring != '\0' )
             {
-              telemetryPacket.push(teststring);  
+              //debug
+              telemetryPacket.push(JSON.parse(teststring));  
             }
         });
 
@@ -260,7 +261,22 @@ function initClient(connectionStringParam, credentialPath) {
 
                   if (telemetryPacket.length != 0) 
                   { 
-                     console.log(telemetryPacket, telemetryPacket.length); 
+                    var grouped_IDs = [];
+                    telemetryPacket.forEach(function(item)
+                    {
+                      var id = item.ID;
+                       grouped_IDs[id] = grouped_IDs[id] || [];
+                       grouped_IDs[id] = item;
+                 
+                    });
+
+                    var single_pkt = [];
+                    Object.keys(grouped_IDs).forEach(function(key)
+                    {
+                      single_pkt.push(JSON.stringify(grouped_IDs[key]));
+                    });
+
+                    console.log(single_pkt, single_pkt.length);
 
                      //var message = new Message(telemetryPacket);
                      //console.log(message);
