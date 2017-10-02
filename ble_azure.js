@@ -285,36 +285,36 @@ function initClient(connectionStringParam, credentialPath) {
             return single_pkt;
          }
 
+         function Azure_Send(buff)
+         {
+           var message = new Message(buff);
+           client.sendEvent(message, (err) => {
+           
+               if (err) {
+                   console.error('Failed to send message to Azure IoT Hub' + err.message);
+               } else {
+                   console.log('Message sent to Azure IoT Hub');
+               } 
+           });
+         }
+
          setInterval(() => {
 
             if(TelemetryPacket.length != 0) 
-              TelemetryPacket = Filter_Repetition(TelemetryPacket);
-
-            if(BatteryPacket.lenrth != 0)
-              BatteryPacket = Filter_Repetition(BatteryPacket);
-                
-
-            console.log("TELEMETRY",TelemetryPacket, TelemetryPacket.length);
-            console.log("BATTERY",BatteryPacket, BatteryPacket.length);
-            
-            function Azure_Send(buff)
             {
-              var message = new Message(buff);
-              client.sendEvent(message, (err) => {
-              
-                  if (err) {
-                      console.error('Failed to send message to Azure IoT Hub' + err.message);
-                  } else {
-                      console.log('Message sent to Azure IoT Hub');
-                  } 
-              });
+              TelemetryPacket = Filter_Repetition(TelemetryPacket);
+              console.log("TELEMETRY",TelemetryPacket, TelemetryPacket.length);
+              Azure_Send(TelemetryPacket);
+              TelemetryPacket = [] ;
             }
 
-            Azure_Send(TelemetryPacket);
-            Azure_Send(BatteryPacket);
- 
-            TelemetryPacket = [] ;
-            BatteryPacket = [];
+            if(BatteryPacket.lenrth != 0)
+            {
+              BatteryPacket = Filter_Repetition(BatteryPacket);
+              console.log("BATTERY",BatteryPacket, BatteryPacket.length);
+              Azure_Send(BatteryPacket);
+              BatteryPacket = [];
+            }   
             
         }, config.interval);
     });
