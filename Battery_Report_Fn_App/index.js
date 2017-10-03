@@ -5,13 +5,13 @@ module.exports = function (context, eventHubMessages) {
     // eventHubMessages.forEach(message => {
     //     context.log(`Processed message ${message}`);
     // });
-    var azure = require('azure-storage');
+    var azure               = require('azure-storage');
     var tablename           = 'BatteryTable';  
     var alarm_tablename     = 'BatteryAlarmTable';  
     var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==;EndpointSuffix=core.windows.net';
     var alarm_batt_level    = 95;                       
-    var tableService = azure.createTableService(connectionString);
-    var date         = Date.now();
+    var tableService        = azure.createTableService(connectionString);
+    var date                = Date.now();
     
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
