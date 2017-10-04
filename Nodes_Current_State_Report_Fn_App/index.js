@@ -17,6 +17,7 @@ module.exports = function (context, eventHubMessages) {
     else
         var event_msg = [eventHubMessages];
  
+        var event_msg = [{"projectname":"Butterfly","ID":"403d9c26e44f4078","Pin0":"high","Pin1":"high"}];
 
     tableService.createTableIfNotExists(tablename, function(error, result, response) {
        if (error) {
@@ -57,9 +58,7 @@ module.exports = function (context, eventHubMessages) {
             event_msg.forEach(function(item){
 
                 if(item.batt_level )//ON/OFF antenna alarm packet
-                ;  
-                else
-                  return;
+                    return;
 
                 var indx = queryentr.findIndex(function (entr)
                 {

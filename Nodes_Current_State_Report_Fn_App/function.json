@@ -9,6 +9,13 @@
       "direction": "out"
     },
     {
+      "type": "table",
+      "name": "inputTable",
+      "tableName": "NodesCurrentStatusTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "in"
+    },
+    {
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
       "path": "iothub-ehub-spectraqua-167919-9ac1d70d5a",
