@@ -1,6 +1,6 @@
 {
   "simulatedData": true,
-  "interval": 30000,
+  "interval": 3000,
   "Telemetry_Interval": 15000,
   "Battery_Interval": 10000,
   "deviceId": "Raspberry Pi Node",

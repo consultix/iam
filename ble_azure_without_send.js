@@ -304,7 +304,7 @@ function initClient(connectionStringParam, credentialPath) {
           {
             TelemetryPacket = Filter_Repetition(TelemetryPacket);
             console.log("TELEMETRY\n",TelemetryPacket, TelemetryPacket.length);
-            Azure_Send(TelemetryPacket);
+            //Azure_Send(TelemetryPacket);
             TelemetryPacket = [] ;
           }
         }, config.Telemetry_Interval);
@@ -314,7 +314,7 @@ function initClient(connectionStringParam, credentialPath) {
           {
             BatteryPacket = Filter_Repetition(BatteryPacket);
             console.log("BATTERY\n",BatteryPacket, BatteryPacket.length);
-            Azure_Send(BatteryPacket);
+            //Azure_Send(BatteryPacket);
             BatteryPacket = [];
           }            
       }, config.Battery_Interval);
