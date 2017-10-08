@@ -24,7 +24,6 @@ var BatteryPacket = [];
 var teststring = '\0';
 
 
-
 // Packest from the Estimote family (Telemetry, Connectivity, etc.) are
 // broadcast as Service Data (per "§ 1.11. The Service Data - 16 bit UUID" from
 // the BLE spec), with the Service UUID 'fe9a'.
@@ -68,8 +67,8 @@ function parseEstimoteTelemetryPacket(data)
     // byte 15, upper 4 bits => state of GPIO pins, one bit per pin
     // 0 = state "low", 1 = state "high"
     //var gpio = {
-     var pin0 = (data.readUInt8(15) & 0b00010000) >> 4 ? 'high' : 'low';
-     var pin1 = 'high';//(data.readUInt8(15) & 0b00100000) >> 5 ? 'high' : 'low';
+     var pin0 = (data.readUInt8(15) & 0b00010000) >> 4 ? 1 : 0;
+     var pin1 = (data.readUInt8(15) & 0b00100000) >> 5 ? 1 : 0;
       //pin2: (data.readUInt8(15) & 0b01000000) >> 6 ? 'high' : 'low',
       //pin3: (data.readUInt8(15) & 0b10000000) >> 7 ? 'high' : 'low',
     //};
@@ -250,7 +249,7 @@ function initClient(connectionStringParam, credentialPath) {
             });
         }, config.interval);      
       
-      
+       
         noble.on('discover', function(peripheral) {
           var data = peripheral.advertisement.serviceData.find(function(el) {
               return el.uuid == ESTIMOTE_SERVICE_UUID;
@@ -285,24 +284,40 @@ function initClient(connectionStringParam, credentialPath) {
           return single_pkt;
        }
 
-         setInterval(() => {
 
+       function Azure_Send(buff)
+       {
+         var message = new Message(buff);
+         client.sendEvent(message, (err) => {
+         
+             if (err) {
+                 console.error('Failed to send message to Azure IoT Hub' + err.message);
+             } else {
+                 console.log('Message sent to Azure IoT Hub');
+             } 
+         });
+       }   
+
+      setInterval(() => {
+          
           if(TelemetryPacket.length != 0) 
           {
             TelemetryPacket = Filter_Repetition(TelemetryPacket);
-            console.log("TELEMETRY",TelemetryPacket, TelemetryPacket.length);
-            //Azure_Send(TelemetryPacket);
+            console.log("TELEMETRY\n",TelemetryPacket, TelemetryPacket.length);
+            Azure_Send(TelemetryPacket);
             TelemetryPacket = [] ;
           }
-
+        }, config.Telemetry_Interval);
+        
+      setInterval(() => {
           if(BatteryPacket.lenrth != 0)
           {
             BatteryPacket = Filter_Repetition(BatteryPacket);
-            console.log("BATTERY",BatteryPacket, BatteryPacket.length);
-            //Azure_Send(BatteryPacket);
+            console.log("BATTERY\n",BatteryPacket, BatteryPacket.length);
+            Azure_Send(BatteryPacket);
             BatteryPacket = [];
-          }  
-        },1000); //config.interval
+          }            
+      }, config.Battery_Interval);
     });
          
 

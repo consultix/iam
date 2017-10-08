@@ -68,8 +68,8 @@ function parseEstimoteTelemetryPacket(data)
     // byte 15, upper 4 bits => state of GPIO pins, one bit per pin
     // 0 = state "low", 1 = state "high"
     //var gpio = {
-     var pin0 = (data.readUInt8(15) & 0b00010000) >> 4 ? 'high' : 'low';
-     var pin1 = 'high';//(data.readUInt8(15) & 0b00100000) >> 5 ? 'high' : 'low';
+     var pin0 = (data.readUInt8(15) & 0b00010000) >> 4 ? 1 : 0;
+     var pin1 = (data.readUInt8(15) & 0b00100000) >> 5 ? 1 : 0;
       //pin2: (data.readUInt8(15) & 0b01000000) >> 6 ? 'high' : 'low',
       //pin3: (data.readUInt8(15) & 0b10000000) >> 7 ? 'high' : 'low',
     //};
@@ -285,6 +285,7 @@ function initClient(connectionStringParam, credentialPath) {
             return single_pkt;
          }
 
+
          function Azure_Send(buff)
          {
            var message = new Message(buff);
@@ -296,28 +297,28 @@ function initClient(connectionStringParam, credentialPath) {
                    console.log('Message sent to Azure IoT Hub');
                } 
            });
-         }
+         }         
 
          setInterval(() => {
 
             if(TelemetryPacket.length != 0) 
             {
               TelemetryPacket = Filter_Repetition(TelemetryPacket);
-              console.log("TELEMETRY",TelemetryPacket, TelemetryPacket.length);
+              console.log("TELEMETRY\n",TelemetryPacket, TelemetryPacket.length);
               Azure_Send(TelemetryPacket);
               TelemetryPacket = [] ;
             }
-
+          }, config.Telemetry_Interval);
+         
+         setInterval(() => {
             if(BatteryPacket.lenrth != 0)
             {
               BatteryPacket = Filter_Repetition(BatteryPacket);
-              console.log("BATTERY",BatteryPacket, BatteryPacket.length);
+              console.log("BATTERY\n",BatteryPacket, BatteryPacket.length);
               Azure_Send(BatteryPacket);
               BatteryPacket = [];
-            }   
-            
-        }, config.interval);
+            }            
+        }, config.Battery_Interval);
     });
-         
 
 })(process.argv[2]);
