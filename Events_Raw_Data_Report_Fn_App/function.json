@@ -4,9 +4,9 @@
     {
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
-      "path": "iothub-ehub-spectraqua-167919-9ac1d70d5a",
+      "path": "butteryfly",
       "consumerGroup": "raw_consumer_group",
-      "connection": "Spectraqual-free_events_IOTHUB",
+      "connection": "ButteryFly_events_IOTHUB",
       "cardinality": "one",
       "direction": "in"
     },
@@ -14,7 +14,7 @@
       "type": "table",
       "name": "outputTable",
       "tableName": "EventsRawDataTable",
-      "connection": "spectralqualstorage_STORAGE",
+      "connection": "butterflystorageaccount_STORAGE",
       "direction": "out"
     }
   ]
