@@ -44,7 +44,6 @@ module.exports = function (context, eventHubMessages) {
         tableService.insertEntity(table, tableentr, function (error, result, response) {
             if(!error){
                 context.log('Entity inserted');
-                context.done();
             }
         });
     }

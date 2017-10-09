@@ -1,17 +1,19 @@
 {
   "IsEncrypted": false,
   "Values": {
-    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
-    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==",
+    "AzureWebJobsDashboard": "DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==",
     "FUNCTIONS_EXTENSION_VERSION": "~1",
-    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
-    "WEBSITE_CONTENTSHARE": "spectralqualb940",
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": "DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==",
+    "WEBSITE_CONTENTSHARE": "butterflyfnapp85d6",
     "WEBSITE_NODE_DEFAULT_VERSION": "6.5.0",
-    "APPINSIGHTS_INSTRUMENTATIONKEY": "acc2f5f7-fd44-4a42-8aec-ecc7d9e2e47f",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "b38a645b-363c-485b-9349-095ba58fbff0",
     "AzureWebJobsSecretStorageType": "disabled",
     "Spectraqual-free_events_IOTHUB": "Endpoint=sb://ihsuprodamres046dednamespace.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=FqbSUEbQjniS1KA97c4CNuzLGU/uLccMa5AB1zi6GdU=;EntityPath=iothub-ehub-spectraqua-167919-9ac1d70d5a",
     "spectralqualstorage_STORAGE": "DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==",
-    "FUNCTION_APP_EDIT_MODE": "readwrite"
+    "FUNCTION_APP_EDIT_MODE": "readwrite",
+    "butterflystorageaccount_STORAGE": "DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==",
+    "ButteryFly_events_IOTHUB": "Endpoint=sb://iothub-ns-butteryfly-236023-5741604be9.servicebus.windows.net/;SharedAccessKeyName=iothubowner;SharedAccessKey=MMfeqmLxbYGW6mD5cVXeasYFaA/jYpRp3/KM0WfmiXA=;EntityPath=butteryfly"
   },
   "ConnectionStrings": {}
 }

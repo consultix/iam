@@ -32,7 +32,6 @@ module.exports = function (context, myTimer) {
         tableService.insertEntity(table, tableentr, function (error, result, response) {
             if(!error){
                 context.log('Entity inserted');
-                context.done();
             }
         });
     } 
@@ -135,7 +134,6 @@ module.exports = function (context, myTimer) {
                             {
                                 if(!error) {
                                     context.log(' Entity updated ' );
-                                    context.done();
                                 }
                             });
                         }
