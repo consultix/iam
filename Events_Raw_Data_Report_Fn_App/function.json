@@ -1,11 +1,11 @@
 {
-  "disabled": true,
+  "disabled": false,
   "bindings": [
     {
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
       "path": "iothub-ehub-spectraqua-167919-9ac1d70d5a",
-      "consumerGroup": "$Default",
+      "consumerGroup": "raw_consumer_group",
       "connection": "Spectraqual-free_events_IOTHUB",
       "cardinality": "one",
       "direction": "in"

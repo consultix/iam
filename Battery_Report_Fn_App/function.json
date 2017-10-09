@@ -1,17 +1,31 @@
 {
-  "disabled": true,
+  "disabled": false,
   "bindings": [
     {
       "type": "table",
-      "name": "inputTable",
+      "name": "batteryinputTable",
       "tableName": "BatteryTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "in"
     },
     {
       "type": "table",
-      "name": "outputTable",
+      "name": "alarminputTable",
+      "tableName": "BatteryAlarmTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "in"
+    },
+    {
+      "type": "table",
+      "name": "batteryoutputTable",
       "tableName": "BatteryTable",
+      "connection": "spectralqualstorage_STORAGE",
+      "direction": "out"
+    },
+    {
+      "type": "table",
+      "name": "alarmoutputTable",
+      "tableName": "BatteryAlarmTable",
       "connection": "spectralqualstorage_STORAGE",
       "direction": "out"
     },
@@ -19,7 +33,7 @@
       "type": "eventHubTrigger",
       "name": "eventHubMessages",
       "path": "iothub-ehub-spectraqua-167919-9ac1d70d5a",
-      "consumerGroup": "$Default",
+      "consumerGroup": "battery_consumer_group",
       "connection": "Spectraqual-free_events_IOTHUB",
       "cardinality": "one",
       "direction": "in"
