@@ -11,7 +11,7 @@ module.exports = function (context, myTimer) {
   
     var Events_History_table    = 'EventsHistoryTable';
     var Availability_table      = 'AvailabilityTable';
-    var connectionString        = 'DefaultEndpointsProtocol=https;AccountName=spectralqualstorage;AccountKey=+aiJXDKs9RrGNu1/XXLglqw8ihm5pNVVHqXCmZ8Om6u47OVWCfy18PuP4D99Ez6zOigh1WpWlHLSKLRrTGRZzw==;EndpointSuffix=core.windows.net';
+    var connectionString        = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
     var tableService            = azure.createTableService(connectionString);
 
     function tablestrg_add_msg(msg, table)
