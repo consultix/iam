@@ -53,7 +53,7 @@ module.exports = function (context, eventHubMessages) {
     var findentr = 
     {
          devid : {'_': 0},
-         status: {'_': 'low'}
+         status: {'_': 0}
      };
 
 

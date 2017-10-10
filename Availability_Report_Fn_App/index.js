@@ -61,8 +61,7 @@ module.exports = function (context, myTimer) {
     }
      
     var query = new azure.TableQuery()
-        // .where('(lastseen._ gt ?) and (status == ?)', start_time_to_check, 'high');   
-        .where('status == ?', 'high');   
+        .where('status == ?', 1);   
     
 
     tableService.queryEntities(Events_History_table, query, null, function(error, result, response) 
