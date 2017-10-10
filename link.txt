@@ -1,1 +1,0 @@
-HostName=Spectraqual-free.azure-devices.net;DeviceId=spectralqual_gateway1;SharedAccessKey=d+CD4LnE1b8TELtwrYqBJ0b7UNWes2bv2Uajtoe7DY8=
