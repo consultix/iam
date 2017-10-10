@@ -18,7 +18,7 @@ const MessageProcessor = require('./messageProcessor.js');
 
 var sendingMessage = true;
 var messageId = 0;
-var client, config, messageProcessor;
+var client, config, specific_config, messageProcessor;
 var TelemetryPacket = [];
 var BatteryPacket = [];
 var teststring = '\0';
@@ -195,6 +195,7 @@ function initClient(connectionStringParam, credentialPath) {
     // read in configuration in config.json
     try {
         config = require('./config.json');
+        specific_config = require('./specific_config.json');
     } catch (err) {
         console.error('Failed to load config.json: ' + err.message);
         return;
@@ -222,7 +223,8 @@ function initClient(connectionStringParam, credentialPath) {
         }
     });
 
-    var connectionString = "HostName=Spectraqual-free.azure-devices.net;DeviceId=spectralqual_gateway1;SharedAccessKey=d+CD4LnE1b8TELtwrYqBJ0b7UNWes2bv2Uajtoe7DY8=";
+    var connectionString = specific_config.connectionstring;
+    
     // create a client
     // read out the connectionString from process environment
     connectionString = connectionString || process.env['AzureIoTHubDeviceConnectionString'];
@@ -307,7 +309,7 @@ function initClient(connectionStringParam, credentialPath) {
             //Azure_Send(TelemetryPacket);
             TelemetryPacket = [] ;
           }
-        }, config.Telemetry_Interval);
+        }, config.interval);
         
       setInterval(() => {
           if(BatteryPacket.lenrth != 0)
@@ -317,7 +319,7 @@ function initClient(connectionStringParam, credentialPath) {
             //Azure_Send(BatteryPacket);
             BatteryPacket = [];
           }            
-      }, config.Battery_Interval);
+      }, config.interval);
     });
          
 

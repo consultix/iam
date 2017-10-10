@@ -1,0 +1,3 @@
+{
+  "connectionstring": "HostName=ButteryFly.azure-devices.net;DeviceId=gateway1;SharedAccessKey=NekbHzIu7Y88KOln9fC8EHzFuZ0Rf8d9N0v2TH6xjpc="
+}

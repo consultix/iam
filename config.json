@@ -1,8 +1,8 @@
 {
   "simulatedData": true,
   "interval": 3000,
-  "Telemetry_Interval": 15000,
-  "Battery_Interval": 10000,
+  "Telemetry_Interval": 60000,
+  "Battery_Interval": 70000,
   "deviceId": "Raspberry Pi Node",
   "LEDPin": 7,
   "messageMax": 256,
