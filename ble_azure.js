@@ -14,11 +14,9 @@ const Protocol = require('azure-iot-device-mqtt').Mqtt;
 
 const bi = require('az-iot-bi');
 
-const MessageProcessor = require('./messageProcessor.js');
-
 var sendingMessage = true;
 var messageId = 0;
-var client, config, specific_config, messageProcessor;
+var client, config, specific_config;
 var TelemetryPacket = [];
 var BatteryPacket = [];
 var teststring = '\0';
@@ -200,8 +198,6 @@ function initClient(connectionStringParam, credentialPath) {
         console.error('Failed to load config.json: ' + err.message);
         return;
     }
-
-    messageProcessor = new MessageProcessor(config);
 
     bi.start()
     bi.trackEvent('success');
