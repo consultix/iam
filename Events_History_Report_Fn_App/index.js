@@ -8,7 +8,7 @@ module.exports = function (context, eventHubMessages) {
     var connectionString        = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
     var tableService            = azure.createTableService(connectionString);
     var date                    = Date.now();
-    
+
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
     
@@ -39,7 +39,7 @@ module.exports = function (context, eventHubMessages) {
             start         : msg.start,
             period        : msg.timeperiod,
             lastseen      : msg.lastseen,   
-            message       : JSON.stringify(msg)
+            //message       : JSON.stringify(msg)
     
         };
 
@@ -80,6 +80,7 @@ module.exports = function (context, eventHubMessages) {
             var queryentr = result.entries; 
             queryentr.reverse(); 
             var filter_devID_buff = [];
+
             event_msg.forEach(function(item){
 
                 // if("battery_level" in item)
@@ -101,16 +102,22 @@ module.exports = function (context, eventHubMessages) {
                 {
                     context.log('Entry Doesnt exist, we will add it');
                     item.timeperiod = 0 ;
-                    item.lastseen   = date;
-                    item.start      = date;
+                    item.lastseen   = Date();
+                    item.start      = Date();
                     tablestrg_add_msg(item, Events_History_table);
                 }
                 else
                 {
                     if( queryentr[indx].status._ == findentr.status._ )
                     { 
-                        queryentr[indx].period._    = date - queryentr[indx].start._ ;
-                        queryentr[indx].lastseen._  = date; 
+                        var ms  = Date.now() - Date.parse(queryentr[indx].start._) ;
+                        var hr  = Math.floor(ms / (1000 * 60 * 60));
+                        var min = Math.floor(ms / (1000 * 60)) % 60;
+                        var sec = Math.floor(ms / 1000) % 60;
+                        queryentr[0].period._  = hr + ":" + min + ":" + sec; 
+                    
+                        queryentr[indx].lastseen._  = Date();
+
                         tableService.replaceEntity(Events_History_table, queryentr[indx], function(error, result, response)
                         {
                             if(!error) {
@@ -122,8 +129,8 @@ module.exports = function (context, eventHubMessages) {
                     {
                         context.log('Status Changed, add new entry');
                         item.timeperiod = 0 ;
-                        item.lastseen   = date; 
-                        item.start      = date;                       
+                        item.lastseen   = Date(); 
+                        item.start      = Date();                       
                         tablestrg_add_msg(item, Events_History_table);                     
                     }
                 }
