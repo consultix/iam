@@ -6,7 +6,7 @@ module.exports = function (context, eventHubMessages) {
     //     context.log(`Processed message ${message}`);
     // });
     var azure               = require('azure-storage');
-    var tablename           = 'BatteryTable';  
+    var batterytable           = 'BatteryTable';  
     var alarm_tablename     = 'BatteryAlarmTable';  
     var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
     var alarm_batt_level    = 95;                       
@@ -20,9 +20,9 @@ module.exports = function (context, eventHubMessages) {
         var event_msg = [eventHubMessages];
  
 
-    tableService.createTableIfNotExists(tablename, function(error, result, response) {
+    tableService.createTableIfNotExists(batterytable, function(error, result, response) {
        if (error) {
-         context.log("Error Creating ", tablename );
+         context.log("Error Creating ", batterytable );
        }
     }); 
 
@@ -37,7 +37,6 @@ module.exports = function (context, eventHubMessages) {
         var date = Date.now();
         var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
         var rowKey       = date + '';
-        var starttime    = date;  
 
         var entGen = azure.TableUtilities.entityGenerator;
     
@@ -71,7 +70,7 @@ module.exports = function (context, eventHubMessages) {
     } 
 
 
-    tableService.queryEntities(tablename, query, null, function(error, result, response) 
+    tableService.queryEntities(batterytable, query, null, function(error, result, response) 
     {
        if(!error) 
        {          
@@ -92,14 +91,14 @@ module.exports = function (context, eventHubMessages) {
                 if(indx < 0)
                 {
                     context.log('Entry Doesnt exist, we will add it');
-                    tablestrg_add_msg(item, tablename);
+                    tablestrg_add_msg(item, batterytable);
                 }
                 else
                 {
                     queryentr[indx].BatteryVolt._  =  item.batt_volt;
                     queryentr[indx].BatteryLevel._ =  item.batt_level;
                     
-                    tableService.replaceEntity(tablename, queryentr[indx], function(error, result, response)
+                    tableService.replaceEntity(batterytable, queryentr[indx], function(error, result, response)
                     {
                         if(!error) {
                             context.log('Entry updated ' );
@@ -108,8 +107,27 @@ module.exports = function (context, eventHubMessages) {
                 }
             });
         }
-    });   
-    
+    });  
+     
+    tableService.queryEntities(batterytable, query, null, function(error, result, response) 
+    {
+       if(!error) 
+       { 
+            var queryentr     =  result.entries;  
+            queryentr.forEach(function(item)
+            {
+                var entrtime = Math.floor(Date.parse(item.Timestamp._)/1000/60);
+                var currtime = Math.floor(Date.now()/1000/60);
+                if(entrtime != currtime)
+                     tableService.deleteEntity('batterytable', item, function(error, response){
+                        if(!error) {
+                            context.log('Entry not updated so deleted' );
+                        }
+                    });
+
+            });
+       }
+    });
     
     tableService.queryEntities(alarm_tablename, query, null, function(error, result, response) 
     {
