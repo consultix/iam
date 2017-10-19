@@ -23,29 +23,58 @@ function add_tableentr(item, table)
 }
 
 
-function tablestrg_add_msg(msg, table)
+
+function table_update_currentstatus(table, entries)
 {
-    var date = Date.now();
-    var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
-    var rowKey       = date + '';
+    tableService.createTableIfNotExists(table, function(error, result, response) {
+        if (error) {
+          context.log("Error Creating ", table );
+        }
+     }); 
 
-    var entGen = azure.TableUtilities.entityGenerator;
+    var query = new azure.TableQuery()
 
-    var tableentr = {
-        PartitionKey  : entGen.String(partitionKey),
-        RowKey        : entGen.String(rowKey),
-        devID         : entGen.String(msg.ID),
-        BatteryVolt   : entGen.String(msg.batt_volt),
-        BatteryLevel  : entGen.String(msg.batt_level),
-    };
+    tableService.queryEntities(table, query, null, function(error, result, response) 
+    {
+        if(!error) 
+        {    
+            var batch = new azure.TableBatch();
 
-    tableService.insertEntity(table, tableentr, function (error, result, response) {
-        if(!error){
-            context.log('Entity inserted');
+            //delete all entries
+            var queryentr     =  result.entries; 
+            queryentr.forEach(function(item)
+            {
+                batch.deleteEntity(item, {echoContent: true});
+            });
+
+            if(batch.hasOperations())
+            {
+                tableService.executeBatch(table, batch, function (error, result, response) {
+                    if(!error) 
+                        context.log('Entities Deleted');
+            
+                    else
+                        context.log(table,'**** Error Deleting Entries***', error.code);
+                });
+
+                batch.clear();
+            }   
+
+            //Insert the new table
+            entries.forEach(function(item){
+                batch.insertEntity(item, {echoContent: true});
+            });    
+
+            tableService.executeBatch(table, batch, function (error, result, response) {
+                if(!error) 
+                    context.log('Entities inserted');
+        
+                else
+                    context.log(table,'**** Error Inserting Entries***', error.code);
+            });
         }
     });
 }
-
 
 module.exports = function (context, eventHubMessages) {
 
@@ -58,77 +87,66 @@ module.exports = function (context, eventHubMessages) {
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
     
     else
-        var event_msg = [eventHubMessages];
- 
-
-    tableService.createTableIfNotExists(batterytable, function(error, result, response) {
-       if (error) {
-         context.log("Error Creating ", batterytable );
-       }
-    }); 
-
-    tableService.createTableIfNotExists(alarm_tablename, function(error, result, response) {
-        if (error) {
-          context.log("Error Creating ", alarm_tablename );
-        }
-     });     
+        var event_msg = [eventHubMessages];     
 
 
     //Constract the new table
     var tableentr = [];
+    var lowbatt_entrs = [];
+
     event_msg.forEach(function(item){
         if(item.batt_level )//ON/OFF antenna alarm packet
+        {
             add_tableentr(item, tableentr);     
+            if(item.batt_level < alarm_batt_level)
+                add_tableentr(item, lowbatt_entrs);
+        }
         else
             return;
     });
 
     
     if(tableentr.length)
-    {
-        var query = new azure.TableQuery()
+        table_update_currentstatus(batterytable, tableentr);
     
-        tableService.queryEntities(batterytable, query, null, function(error, result, response) 
-        {
-            if(!error) 
-            {    
-                var batch = new azure.TableBatch();
+    if(lowbatt_entrs.length)
+        table_update_currentstatus(alarm_tablename, lowbatt_entrs);
+        
 
-                //delete all entries
-                var queryentr     =  result.entries; 
-                queryentr.forEach(function(item)
-                {
-                    batch.deleteEntity(item, {echoContent: true});
-                });
+    context.done();
+};
 
-                if(batch.hasOperations())
-                {
-                    tableService.executeBatch(batterytable, batch, function (error, result, response) {
-                        if(!error) 
-                            context.log('Entities Deleted');
-                
-                        else
-                            context.log('**** Error Deleting Entries***', error.code);
-                    });
 
-                    batch.clear();
-                }   
 
-                //Insert the new table
-                tableentr.forEach(function(item){
-                    batch.insertEntity(item, {echoContent: true});
-                });    
+// function tablestrg_add_msg(msg, table)
+// {
+//     var date = Date.now();
+//     var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
+//     var rowKey       = date + '';
 
-                tableService.executeBatch(batterytable, batch, function (error, result, response) {
-                    if(!error) 
-                        context.log('Entities inserted');
-            
-                    else
-                        context.log('**** Error Inserting Entries***', error.code);
-                });
-            }
-        });
-    } 
+//     var entGen = azure.TableUtilities.entityGenerator;
+
+//     var tableentr = {
+//         PartitionKey  : entGen.String(partitionKey),
+//         RowKey        : entGen.String(rowKey),
+//         devID         : entGen.String(msg.ID),
+//         BatteryVolt   : entGen.String(msg.batt_volt),
+//         BatteryLevel  : entGen.String(msg.batt_level),
+//     };
+
+//     tableService.insertEntity(table, tableentr, function (error, result, response) {
+//         if(!error){
+//             context.log('Entity inserted');
+//         }
+//     });
+// }
+
+    // tableService.createTableIfNotExists(alarm_tablename, function(error, result, response) {
+    //     if (error) {
+    //       context.log("Error Creating ", alarm_tablename );
+    //     }
+    //  });
+
 
     // var findentr = 
     // {
@@ -244,6 +262,3 @@ module.exports = function (context, eventHubMessages) {
     //     }
     // });    
     
-
-    context.done();
-};
