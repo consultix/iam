@@ -1,4 +1,7 @@
+var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
 var azure               = require('azure-storage');
+var tableService        = azure.createTableService(connectionString);
+
 
 function add_tableentr(item, table)
 {
@@ -20,13 +23,35 @@ function add_tableentr(item, table)
 }
 
 
+function tablestrg_add_msg(msg, table)
+{
+    var date = Date.now();
+    var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
+    var rowKey       = date + '';
+
+    var entGen = azure.TableUtilities.entityGenerator;
+
+    var tableentr = {
+        PartitionKey  : entGen.String(partitionKey),
+        RowKey        : entGen.String(rowKey),
+        devID         : entGen.String(msg.ID),
+        BatteryVolt   : entGen.String(msg.batt_volt),
+        BatteryLevel  : entGen.String(msg.batt_level),
+    };
+
+    tableService.insertEntity(table, tableentr, function (error, result, response) {
+        if(!error){
+            context.log('Entity inserted');
+        }
+    });
+}
+
+
 module.exports = function (context, eventHubMessages) {
 
     var batterytable        = 'BatteryTable';  
     var alarm_tablename     = 'BatteryAlarmTable';  
-    var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
     var alarm_batt_level    = 95;                       
-    var tableService        = azure.createTableService(connectionString);
     var date                = Date.now();
     
     if(typeof eventHubMessages === 'string')
@@ -48,31 +73,8 @@ module.exports = function (context, eventHubMessages) {
         }
      });     
 
-    function tablestrg_add_msg(msg, table)
-    {
-        var date = Date.now();
-        var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
-        var rowKey       = date + '';
 
-        var entGen = azure.TableUtilities.entityGenerator;
-    
-        var tableentr = {
-            PartitionKey  : entGen.String(partitionKey),
-            RowKey        : entGen.String(rowKey),
-            devID         : entGen.String(msg.ID),
-            BatteryVolt   : entGen.String(msg.batt_volt),
-            BatteryLevel  : entGen.String(msg.batt_level),
-        };
-
-        tableService.insertEntity(table, tableentr, function (error, result, response) {
-            if(!error){
-                context.log('Entity inserted');
-            }
-        });
-    }
-
-
-    //Form the new table
+    //Constract the new table
     var tableentr = [];
     event_msg.forEach(function(item){
         if(item.batt_level )//ON/OFF antenna alarm packet
@@ -81,6 +83,7 @@ module.exports = function (context, eventHubMessages) {
             return;
     });
 
+    
     if(tableentr.length)
     {
         var query = new azure.TableQuery()
@@ -105,7 +108,7 @@ module.exports = function (context, eventHubMessages) {
                             context.log('Entities Deleted');
                 
                         else
-                            context.log('**** Error Deleting Entries***');
+                            context.log('**** Error Deleting Entries***', error.code);
                     });
 
                     batch.clear();
@@ -121,7 +124,7 @@ module.exports = function (context, eventHubMessages) {
                         context.log('Entities inserted');
             
                     else
-                        context.log('**** Error Inserting Entries***', error);
+                        context.log('**** Error Inserting Entries***', error.code);
                 });
             }
         });
