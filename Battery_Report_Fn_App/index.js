@@ -109,8 +109,8 @@ module.exports = function (context, eventHubMessages) {
     if(tableentr.length)
         table_update_currentstatus(batterytable, tableentr);
     
-    if(lowbatt_entrs.length)
-        table_update_currentstatus(alarm_tablename, lowbatt_entrs);
+    // if(lowbatt_entrs.length)
+    //     table_update_currentstatus(alarm_tablename, lowbatt_entrs);
         
 
     context.done();
