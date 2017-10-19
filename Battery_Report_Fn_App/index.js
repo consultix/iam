@@ -24,7 +24,7 @@ function add_tableentr(item, table)
 
 
 
-function table_update_currentstatus(table, entries)
+function table_update_currentstatus(table, entries, context)
 {
     tableService.createTableIfNotExists(table, function(error, result, response) {
         if (error) {
@@ -92,31 +92,25 @@ module.exports = function (context, eventHubMessages) {
 
     //Constract the new table
     var tableentr = [];
-    var lowbatt_entrs = [];
-
     event_msg.forEach(function(item){
         if(item.batt_level )//ON/OFF antenna alarm packet
-        {
             add_tableentr(item, tableentr);     
-            if(item.batt_level < alarm_batt_level)
-                add_tableentr(item, lowbatt_entrs);
-        }
         else
             return;
     });
 
     
     if(tableentr.length)
-        table_update_currentstatus(batterytable, tableentr);
-    
-    // if(lowbatt_entrs.length)
-    //     table_update_currentstatus(alarm_tablename, lowbatt_entrs);
-        
+        table_update_currentstatus(batterytable, tableentr, context);        
 
     context.done();
 };
 
-
+// var lowbatt_entrs = [];
+// if(item.batt_level < alarm_batt_level)
+// add_tableentr(item, lowbatt_entrs);
+// if(lowbatt_entrs.length)
+//     table_update_currentstatus(alarm_tablename, lowbatt_entrs);
 
 // function tablestrg_add_msg(msg, table)
 // {
