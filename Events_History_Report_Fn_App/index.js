@@ -38,9 +38,7 @@ module.exports = function (context, eventHubMessages) {
             status        : msg.Pin1,
             start         : msg.start,
             period        : msg.timeperiod,
-            lastseen      : msg.lastseen,   
-            //message       : JSON.stringify(msg)
-    
+            lastseen      : msg.lastseen,       
         };
 
         tableService.insertEntity(table, tableentr, function (error, result, response) {
@@ -114,7 +112,7 @@ module.exports = function (context, eventHubMessages) {
                         var hr  = Math.floor(ms / (1000 * 60 * 60));
                         var min = Math.floor(ms / (1000 * 60)) % 60;
                         var sec = Math.floor(ms / 1000) % 60;
-                        queryentr[0].period._  = hr + ":" + min + ":" + sec; 
+                        queryentr[indx].period._  = hr + ":" + min + ":" + sec; 
                     
                         queryentr[indx].lastseen._  = Date();
 

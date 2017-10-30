@@ -10,22 +10,8 @@
     },
     {
       "type": "table",
-      "name": "alarminputTable",
-      "tableName": "BatteryAlarmTable",
-      "connection": "butterflystorageaccount_STORAGE",
-      "direction": "in"
-    },
-    {
-      "type": "table",
       "name": "batteryoutputTable",
       "tableName": "BatteryTable",
-      "connection": "butterflystorageaccount_STORAGE",
-      "direction": "out"
-    },
-    {
-      "type": "table",
-      "name": "alarmoutputTable",
-      "tableName": "BatteryAlarmTable",
       "connection": "butterflystorageaccount_STORAGE",
       "direction": "out"
     },
