@@ -1,7 +1,7 @@
 var azure               = require('azure-storage');
 var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
 var tableService        = azure.createTableService(connectionString);
-
+var blobSvc             = azure.createBlobService(connectionString);
 
 function add_tableentr(item, table)
 {
@@ -11,10 +11,10 @@ function add_tableentr(item, table)
     var entGen = azure.TableUtilities.entityGenerator;
 
     var entr = {
-        PartitionKey  : entGen.String(partitionKey),
-        RowKey        : entGen.String(item.ID),
-        devID         : entGen.String(item.ID),
-        Status        : entGen.Boolean(item.Pin1)
+        PartitionKey  : /*entGen.String*/(partitionKey),
+        RowKey        : /*entGen.String*/(item.ID),
+        devID         : /*entGen.String*/(item.ID),
+        Status        : /*entGen.Boolean*/(item.Pin1)
     };
     
     table.push(entr);
@@ -24,53 +24,63 @@ function add_tableentr(item, table)
 function table_update_currentstatus(table, entries, context)
 {
     tableService.createTableIfNotExists(table, function(error, result, response) {
-        if (error) {
+        if (error) 
+        {
           context.log("Error Creating ", table );
+          return;
+        }
+        else
+        {
+            var query = new azure.TableQuery()
+            
+            tableService.queryEntities(table, query, null, function(error, result, response) 
+            {
+                if(!error) 
+                {    
+                    var batch = new azure.TableBatch();
+        
+                    //delete all entries
+                    var queryentr     =  result.entries; 
+                    queryentr.forEach(function(item)
+                    {
+                        batch.deleteEntity(item, {echoContent: true});
+                    });
+        
+                    if(batch.hasOperations())
+                    {
+                        tableService.executeBatch(table, batch, function (error, result, response) 
+                        {
+                            if(error) 
+                            {
+                                context.log(table,'**** Error Deleting Entries***', error.code);
+                                return;
+                            }
+                            else
+                            {
+                                context.log('Entities Deleted');
+                                batch.clear();
+        
+                                //Insert the new table
+                                entries.forEach(function(item){
+                                    batch.insertEntity(item, {echoContent: true});
+                                });    
+        
+                                tableService.executeBatch(table, batch, function (error, result, response) {
+                                    if(!error) 
+                                        context.log('Entities inserted');
+        
+                                    else
+                                        context.log(table,'**** Error Inserting Entries***', error.code);
+                                });
+                            }
+                        });
+                    }   
+                }
+            });
         }
      }); 
 
-    var query = new azure.TableQuery()
-
-    tableService.queryEntities(table, query, null, function(error, result, response) 
-    {
-        if(!error) 
-        {    
-            var batch = new azure.TableBatch();
-
-            //delete all entries
-            var queryentr     =  result.entries; 
-            queryentr.forEach(function(item)
-            {
-                batch.deleteEntity(item, {echoContent: true});
-            });
-
-            if(batch.hasOperations())
-            {
-                tableService.executeBatch(table, batch, function (error, result, response) {
-                    if(!error) 
-                        context.log('Entities Deleted');
-            
-                    else
-                        context.log(table,'**** Error Deleting Entries***', error.code);
-                });
-
-                batch.clear();
-            }   
-
-            //Insert the new table
-            entries.forEach(function(item){
-                batch.insertEntity(item, {echoContent: true});
-            });    
-
-            tableService.executeBatch(table, batch, function (error, result, response) {
-                if(!error) 
-                    context.log('Entities inserted');
-        
-                else
-                    context.log(table,'**** Error Inserting Entries***', error.code);
-            });
-        }
-    });
+    
 }
 
 
@@ -78,6 +88,7 @@ module.exports = function (context, eventHubMessages) {
 
     var tablename           = 'NodesCurrentStatusTable';  
     var date                = Date.now();
+    var containername       = 'butterflycontainer';
 
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
@@ -97,8 +108,73 @@ module.exports = function (context, eventHubMessages) {
             add_tableentr(item, tableentr);     
     });
 
-    if(tableentr.length)
-        table_update_currentstatus(tablename, tableentr, context);        
+    // if(tableentr.length)
+    //     table_update_currentstatus(tablename, tableentr, context);        
+
+    // var streamify = require('stream-array');
+    // var streamarray = streamify(tableentr);
+    
+    // var fs = require('fs');
+    // var wstream = fs.createWriteStream('nodecurrentstatus.json');
+    // tableentr.forEach(function(item){
+    //     wstream.write(item);
+    // });
+    // wstream.end();
+
+    // var Stream = require('stream');
+    // const readable = new Stream.Readable();
+    // tableentr.forEach(function(item){
+    //     readable.push(item);
+    // });
+    
+
+    blobSvc.createContainerIfNotExists(containername, function(err, result, response) {
+        if (err) {
+            console.log("Couldn't create container %s", containername);
+            console.error(err);
+        } else {
+            if (result) {
+                console.log('Container %s created', containername);
+            } else {
+                console.log('Container %s already exists', containername);
+            }
+            
+            if(tableentr.length)
+            {
+                var strings = JSON.stringify(tableentr); 
+
+                blobSvc.createBlockBlobFromText(
+                    containername,
+                    'nodecurrentstatus',
+                    strings,
+                    function(error, result, response){
+                        if(error){
+                            console.log("Couldn't upload string");
+                            console.error(error);
+                        } else {
+                            console.log('String uploaded successfully');
+                        }
+                    });
+
+                // blobSvc.createBlockBlobFromStream(
+                //     containername,
+                //     'my-awesome-stream-blob',
+                //     wstream,
+                //     tableentr.length,
+                //     function(error, result, response){
+                //         if(error){
+                //             console.log("Couldn't upload stream");
+                //             console.error(error);
+                //         } else {
+                //             console.log('Stream uploaded successfully');
+                //         }
+                //     });
+            }
+        }
+    });
+
+
+    
 
     context.done();
 };
