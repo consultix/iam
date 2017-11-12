@@ -96,7 +96,7 @@ module.exports = function (context, eventHubMessages) {
     else
         var event_msg = [eventHubMessages];
  
-        var event_msg = [{"projectname":"Butterfly","ID":"403d9c26e44f4078","Pin0":1,"Pin1":1}];
+    //var event_msg = [{"projectname":"Butterfly","ID":"403d9c26e44f4078","Pin0":1,"Pin1":1}];
 
     //Constract the new table
     var tableentr = [];
@@ -140,7 +140,12 @@ module.exports = function (context, eventHubMessages) {
             
             if(tableentr.length)
             {
-                var strings = JSON.stringify(tableentr[0]); 
+                var strings = "";
+                tableentr.forEach(function(item){
+                    strings = strings + JSON.stringify(item) + ',';
+                });;
+                
+                //var strings = JSON.stringify(tableentr[0]); 
                 var blobpath = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date}`;
 
                 blobSvc.createBlockBlobFromText(
