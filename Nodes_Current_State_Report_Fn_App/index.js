@@ -89,6 +89,7 @@ module.exports = function (context, eventHubMessages) {
     var tablename           = 'NodesCurrentStatusTable';  
     var date                = new Date();
     var containername       = 'butterflycontainer';
+    var blobpath            = 'ncsds/'; 
 
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
@@ -146,7 +147,7 @@ module.exports = function (context, eventHubMessages) {
                 });;
                 
                 //var strings = JSON.stringify(tableentr[0]); 
-                var blobpath = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
+                blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
 
                 blobSvc.createBlockBlobFromText(
                     containername,

@@ -2,14 +2,11 @@ var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflys
 var azure               = require('azure-storage');
 var blobSvc             = azure.createBlobService(connectionString);
 
-
-
+//
 function add_tableentr(item, table)
 {
     var date = Date.now();
     var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
-
-    var entGen = azure.TableUtilities.entityGenerator;
 
     var entr = {
         PartitionKey  : (partitionKey),
@@ -63,27 +60,25 @@ module.exports = function (context, eventHubMessages)
                     console.log('Container %s already exists', containername);
                 }
                 
-                {
-                    var strings = "";
-                    tableentr.forEach(function(item){
-                        strings = strings + ',' + JSON.stringify(item);
-                    });;
-                    
-                    blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
-    
-                    blobSvc.createBlockBlobFromText(
-                        containername,
-                        blobpath,
-                        strings,
-                        function(error, result, response){
-                            if(error){
-                                console.log("Couldn't upload string");
-                                console.error(error);
-                            } else {
-                                console.log('String uploaded successfully');
-                            }
-                        });
-                }
+                var strings = "";
+                tableentr.forEach(function(item){
+                    strings = strings + ',' + JSON.stringify(item);
+                });;
+                
+                blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
+
+                blobSvc.createBlockBlobFromText(
+                    containername,
+                    blobpath,
+                    strings,
+                    function(error, result, response){
+                        if(error){
+                            console.log("Couldn't upload string");
+                            console.error(error);
+                        } else {
+                            console.log('String uploaded successfully');
+                        }
+                    });
             }
         });    
     }
