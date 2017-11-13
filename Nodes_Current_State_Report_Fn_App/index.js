@@ -146,7 +146,7 @@ module.exports = function (context, eventHubMessages) {
                 });;
                 
                 //var strings = JSON.stringify(tableentr[0]); 
-                var blobpath = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date}`;
+                var blobpath = `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
 
                 blobSvc.createBlockBlobFromText(
                     containername,

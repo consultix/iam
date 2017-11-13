@@ -1,22 +1,22 @@
 var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflystorageaccount;AccountKey=M2fwzoGsZ+nlxeKY8wRDlCjXr/YUPkJHFG9cuX0ve3DVYyvugi0lNNOamWV+E45WXQn4kCyigCT9i1+oFbI1QQ==;EndpointSuffix=core.windows.net';
 var azure               = require('azure-storage');
-var tableService        = azure.createTableService(connectionString);
+var blobSvc             = azure.createBlobService(connectionString);
+
 
 
 function add_tableentr(item, table)
 {
     var date = Date.now();
     var partitionKey = Math.floor(date / (24 * 60 * 60 * 1000)) + '';
-    var rowKey       = date + '';
 
     var entGen = azure.TableUtilities.entityGenerator;
 
     var entr = {
-        PartitionKey  : entGen.String(partitionKey),
-        RowKey        : entGen.String(item.ID),
-        devID         : entGen.String(item.ID),
-        BatteryVolt   : entGen.String(item.batt_volt),
-        BatteryLevel  : entGen.String(item.batt_level),
+        PartitionKey  : (partitionKey),
+        RowKey        : (item.ID),
+        devID         : (item.ID),
+        BatteryVolt   : (item.batt_volt),
+        BatteryLevel  : (item.batt_level),
     };
     
     table.push(entr);
@@ -24,62 +24,11 @@ function add_tableentr(item, table)
 
 
 
-function table_update_currentstatus(table, entries, context)
+module.exports = function (context, eventHubMessages) 
 {
-    tableService.createTableIfNotExists(table, function(error, result, response) {
-        if (error) {
-          context.log("Error Creating ", table );
-        }
-     }); 
-
-    var query = new azure.TableQuery()
-
-    tableService.queryEntities(table, query, null, function(error, result, response) 
-    {
-        if(!error) 
-        {    
-            var batch = new azure.TableBatch();
-
-            //delete all entries
-            var queryentr     =  result.entries; 
-            queryentr.forEach(function(item)
-            {
-                batch.deleteEntity(item, {echoContent: true});
-            });
-
-            if(batch.hasOperations())
-            {
-                tableService.executeBatch(table, batch, function (error, result, response) {
-                    if(!error) 
-                        context.log('Entities Deleted');
-            
-                    else
-                        context.log(table,'**** Error Deleting Entries***', error.code);
-                });
-
-                batch.clear();
-            }   
-
-            //Insert the new table
-            entries.forEach(function(item){
-                batch.insertEntity(item, {echoContent: true});
-            });    
-
-            tableService.executeBatch(table, batch, function (error, result, response) {
-                if(!error) 
-                    context.log('Entities inserted');
-        
-                else
-                    context.log(table,'**** Error Inserting Entries***', error.code);
-            });
-        }
-    });
-}
-
-module.exports = function (context, eventHubMessages) {
-
-    var batterytable        = 'BatteryTable';  
-    var date                = Date.now();
+    var date                = new Date();
+    var containername       = 'butterflycontainer';
+    var blobpath            = 'batterydatasets/';
     
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
@@ -87,6 +36,7 @@ module.exports = function (context, eventHubMessages) {
     else
         var event_msg = [eventHubMessages];     
 
+        //var event_msg = {"PartitionKey":"17483","RowKey":"d4711aa652b6ddd1","devID":"d4711aa652b6ddd1","BatteryVolt":6095,"BatteryLevel":95};
 
     //Constract the new table
     var tableentr = [];
@@ -99,7 +49,43 @@ module.exports = function (context, eventHubMessages) {
 
     
     if(tableentr.length)
-        table_update_currentstatus(batterytable, tableentr, context);        
-
+    {
+        blobSvc.createContainerIfNotExists(containername, function(err, result, response) {
+            if (err) {
+                console.log("Couldn't create container %s", containername);
+                console.error(err);
+            } 
+            else 
+            {
+                if (result) {
+                    console.log('Container %s created', containername);
+                } else {
+                    console.log('Container %s already exists', containername);
+                }
+                
+                {
+                    var strings = "";
+                    tableentr.forEach(function(item){
+                        strings = strings + ',' + JSON.stringify(item);
+                    });;
+                    
+                    blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
+    
+                    blobSvc.createBlockBlobFromText(
+                        containername,
+                        blobpath,
+                        strings,
+                        function(error, result, response){
+                            if(error){
+                                console.log("Couldn't upload string");
+                                console.error(error);
+                            } else {
+                                console.log('String uploaded successfully');
+                            }
+                        });
+                }
+            }
+        });    
+    }
     context.done();
 };
