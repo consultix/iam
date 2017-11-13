@@ -25,7 +25,7 @@ module.exports = function (context, eventHubMessages)
 {
     var date                = new Date();
     var containername       = 'butterflycontainer';
-    var blobpath            = 'batterydatasets/';
+    var blobpath            = 'bcsds/';
     
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
