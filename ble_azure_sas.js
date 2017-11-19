@@ -163,31 +163,6 @@ function onStop(request, response) {
 }
 
 
-
-function initClient(connectionStringParam, credentialPath) {
-  var connectionString = ConnectionString.parse(connectionStringParam);
-  var deviceId = connectionString.DeviceId;
-
-  // fromConnectionString must specify a transport constructor, coming from any transport package.
-  client = Client.fromConnectionString(connectionStringParam, Protocol);
-
-  // Configure the client to use X509 authentication if required by the connection string.
-  if (connectionString.x509) {
-    // Read X.509 certificate and private key.
-    // These files should be in the current folder and use the following naming convention:
-    // [device name]-cert.pem and [device name]-key.pem, example: myraspberrypi-cert.pem
-    var connectionOptions = {
-      cert: fs.readFileSync(path.join(credentialPath, deviceId + '-cert.pem')).toString(),
-      key: fs.readFileSync(path.join(credentialPath, deviceId + '-key.pem')).toString()
-    };
-
-    client.setOptions(connectionOptions);
-
-    console.log('[Device] Using X.509 client certificate authentication');
-  }
-  return client;
-}
-
 (function (connectionString) {
  
     // read in configuration in config.json
@@ -219,13 +194,7 @@ function initClient(connectionStringParam, credentialPath) {
         }
     });
 
-    var connectionString = specific_config.connectionstring;
-    
-    // create a client
-    // read out the connectionString from process environment
-    connectionString = connectionString || process.env['AzureIoTHubDeviceConnectionString'];
-    client = initClient(connectionString, config);
-
+    client = Client.fromSharedAccessSignature(specific_config.sas_key, Protocol);//sas
         
     client.open((err) => {
         if (err) {
@@ -302,7 +271,7 @@ function initClient(connectionStringParam, credentialPath) {
             if(TelemetryPacket.length != 0) 
             {
               TelemetryPacket = Filter_Repetition(TelemetryPacket);
-              console.log("TELEMETRY\n",TelemetryPacket, TelemetryPacket.length);
+              console.log("TELEMETRY", Date(),"\n", TelemetryPacket, TelemetryPacket.length);
               Azure_Send(TelemetryPacket);
               TelemetryPacket = [] ;
             }
@@ -312,7 +281,7 @@ function initClient(connectionStringParam, credentialPath) {
             if(BatteryPacket.lenrth != 0)
             {
               BatteryPacket = Filter_Repetition(BatteryPacket);
-              console.log("BATTERY\n",BatteryPacket, BatteryPacket.length);
+              console.log("BATTERY", Date(),"\n", BatteryPacket, BatteryPacket.length);
               Azure_Send(BatteryPacket);
               BatteryPacket = [];
             }            

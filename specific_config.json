@@ -1,3 +1,4 @@
 {
-  "connectionstring": "HostName=ButteryFly.azure-devices.net;DeviceId=gateway1;SharedAccessKey=NekbHzIu7Y88KOln9fC8EHzFuZ0Rf8d9N0v2TH6xjpc="
+  "connectionstring": "HostName=ButteryFly.azure-devices.net;DeviceId=mastergateway;SharedAccessKey=FPkI1qSMmYNnmt35abHLYJ8WkaftJhrEaeS2sLchNCM=",
+  "sas_key": "SharedAccessSignature sr=ButteryFly.azure-devices.net%2Fdevices%2Fmastergateway&sig=KbWS6vjz8MtUO0HKKFiYWAnqVHPVi81lYMYAzt%2Bn5NA%3D&se=1540123753"
 }

@@ -1,6 +1,6 @@
 {
   "interval": 3000,
-  "Telemetry_Interval": 180000,//3min
-  "Battery_Interval":   210000,//3.5min
+  "Telemetry_Interval": 20000,
+  "Battery_Interval": 30000,
   "credentialPath": "~/.iot-hub"
 }
