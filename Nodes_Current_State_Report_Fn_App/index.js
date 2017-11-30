@@ -3,6 +3,7 @@ var connectionString    = 'DefaultEndpointsProtocol=https;AccountName=butterflys
 var tableService        = azure.createTableService(connectionString);
 var blobSvc             = azure.createBlobService(connectionString);
 
+
 function add_tableentr(item, table)
 {
     var date = Date.now();
@@ -21,75 +22,23 @@ function add_tableentr(item, table)
 }
 
 
-function table_update_currentstatus(table, entries, context)
-{
-    tableService.createTableIfNotExists(table, function(error, result, response) {
-        if (error) 
-        {
-          context.log("Error Creating ", table );
-          return;
-        }
-        else
-        {
-            var query = new azure.TableQuery()
-            
-            tableService.queryEntities(table, query, null, function(error, result, response) 
-            {
-                if(!error) 
-                {    
-                    var batch = new azure.TableBatch();
-        
-                    //delete all entries
-                    var queryentr     =  result.entries; 
-                    queryentr.forEach(function(item)
-                    {
-                        batch.deleteEntity(item, {echoContent: true});
-                    });
-        
-                    if(batch.hasOperations())
-                    {
-                        tableService.executeBatch(table, batch, function (error, result, response) 
-                        {
-                            if(error) 
-                            {
-                                context.log(table,'**** Error Deleting Entries***', error.code);
-                                return;
-                            }
-                            else
-                            {
-                                context.log('Entities Deleted');
-                                batch.clear();
-        
-                                //Insert the new table
-                                entries.forEach(function(item){
-                                    batch.insertEntity(item, {echoContent: true});
-                                });    
-        
-                                tableService.executeBatch(table, batch, function (error, result, response) {
-                                    if(!error) 
-                                        context.log('Entities inserted');
-        
-                                    else
-                                        context.log(table,'**** Error Inserting Entries***', error.code);
-                                });
-                            }
-                        });
-                    }   
-                }
-            });
-        }
-     }); 
-
-    
-}
-
-
 module.exports = function (context, eventHubMessages) {
 
     var tablename           = 'NodesCurrentStatusTable';  
     var date                = new Date();
     var containername       = 'butterflycontainer';
     var blobpath            = 'ncsds/'; 
+
+    var hrstr = date.getHours().toString();    //To make sure that the hr string 
+    if (hrstr.length < 2) hrstr = '0' + hrstr; //length is two to keep format "HH"
+
+    var daystr = date.getDate().toString();  //To make sure that the day string 
+    if (daystr.length < 2) daystr = '0' + daystr; //length is two to keep format "DD"
+
+    var monthstr = date.getMonth() + 1;           //To make sure that the day string 
+    monthstr = monthstr.toString();                //length is two to keep format "DD"
+    if (monthstr.length < 2) monthstr = '0' + monthstr;
+
 
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
@@ -107,25 +56,6 @@ module.exports = function (context, eventHubMessages) {
         else
             add_tableentr(item, tableentr);     
     });
-
-    // if(tableentr.length)
-    //     table_update_currentstatus(tablename, tableentr, context);        
-
-    // var streamify = require('stream-array');
-    // var streamarray = streamify(tableentr);
-    
-    // var fs = require('fs');
-    // var wstream = fs.createWriteStream('nodecurrentstatus.json');
-    // tableentr.forEach(function(item){
-    //     wstream.write(item);
-    // });
-    // wstream.end();
-
-    // var Stream = require('stream');
-    // const readable = new Stream.Readable();
-    // tableentr.forEach(function(item){
-    //     readable.push(item);
-    // });
     
 
     blobSvc.createContainerIfNotExists(containername, function(err, result, response) {
@@ -141,13 +71,8 @@ module.exports = function (context, eventHubMessages) {
             
             if(tableentr.length)
             {
-                var strings = "";
-                tableentr.forEach(function(item){
-                    strings = strings + JSON.stringify(item) + ',';
-                });;
-                
-                //var strings = JSON.stringify(tableentr[0]); 
-                blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
+                var strings = JSON.stringify(tableentr[0]); 
+                blobpath = blobpath + `${date.getFullYear()}/${monthstr}/${daystr}/${hrstr}/${date.getMinutes()}`;
 
                 blobSvc.createBlockBlobFromText(
                     containername,
@@ -161,26 +86,9 @@ module.exports = function (context, eventHubMessages) {
                             console.log('String uploaded successfully');
                         }
                     });
-
-                // blobSvc.createBlockBlobFromStream(
-                //     containername,
-                //     'my-awesome-stream-blob',
-                //     wstream,
-                //     tableentr.length,
-                //     function(error, result, response){
-                //         if(error){
-                //             console.log("Couldn't upload stream");
-                //             console.error(error);
-                //         } else {
-                //             console.log('Stream uploaded successfully');
-                //         }
-                //     });
             }
         }
     });
-
-
-    
 
     context.done();
 };

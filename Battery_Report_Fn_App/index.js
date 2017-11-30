@@ -12,7 +12,7 @@ function add_tableentr(item, table)
         PartitionKey  : (partitionKey),
         RowKey        : (item.ID),
         devID         : (item.ID),
-        BatteryVolt   : (item.batt_volt),
+        BatteryVolt   : (item.batt_volt/1000),
         BatteryLevel  : (item.batt_level),
     };
     
@@ -62,7 +62,7 @@ module.exports = function (context, eventHubMessages)
                 
                 var strings = "";
                 tableentr.forEach(function(item){
-                    strings = strings + ',' + JSON.stringify(item);
+                    strings = strings + JSON.stringify(item) + ',';
                 });;
                 
                 blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
