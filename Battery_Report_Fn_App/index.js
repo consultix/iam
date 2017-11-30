@@ -60,11 +60,7 @@ module.exports = function (context, eventHubMessages)
                     console.log('Container %s already exists', containername);
                 }
                 
-                var strings = "";
-                tableentr.forEach(function(item){
-                    strings = strings + JSON.stringify(item) + ',';
-                });;
-                
+                var strings = JSON.stringify(tableentr[0]); 
                 blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
 
                 blobSvc.createBlockBlobFromText(
