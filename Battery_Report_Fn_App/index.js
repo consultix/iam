@@ -26,6 +26,16 @@ module.exports = function (context, eventHubMessages)
     var date                = new Date();
     var containername       = 'butterflycontainer';
     var blobpath            = 'bcsds/';
+
+    var hrstr = date.getHours().toString();    //To make sure that the hr string 
+    if (hrstr.length < 2) hrstr = '0' + hrstr; //length is two to keep format "HH"
+
+    var daystr = date.getDate().toString();  //To make sure that the day string 
+    if (daystr.length < 2) daystr = '0' + daystr; //length is two to keep format "DD"
+
+    var monthstr = date.getMonth() + 1;           //To make sure that the day string 
+    monthstr = monthstr.toString();                //length is two to keep format "DD"
+    if (monthstr.length < 2) monthstr = '0' + monthstr;
     
     if(typeof eventHubMessages === 'string')
         var event_msg = JSON.parse("[" + eventHubMessages + "]");
@@ -61,8 +71,8 @@ module.exports = function (context, eventHubMessages)
                 }
                 
                 var strings = JSON.stringify(tableentr[0]); 
-                blobpath = blobpath + `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}/${date.getHours()}/${date.getMinutes()}`;
-
+                blobpath = blobpath + `${date.getFullYear()}/${monthstr}/${daystr}/${hrstr}/${date.getMinutes()}`;
+                
                 blobSvc.createBlockBlobFromText(
                     containername,
                     blobpath,
